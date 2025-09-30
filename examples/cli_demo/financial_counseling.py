@@ -46,9 +46,7 @@ def main():
     ]
 
     for turn in conversation:
-        run_turn(
-            runtime, space_id, "jane", turn
-        )  # simulate jane speaking all for brevity
+        run_turn(runtime, space_id, "jane", turn)  # simulate jane speaking all for brevity
 
     # Additional participants
     run_turn(runtime, space_id, "john", "我觉得我们可以稍微多花一点在体验上。")

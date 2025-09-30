@@ -105,9 +105,7 @@ def _extract_int(text: str | None) -> int | None:
     return int(nums[0])
 
 
-def aggregate_and_write(
-    tag: str, runs: List[Dict[str, Any]], out_dir: Path
-) -> Dict[str, Any]:
+def aggregate_and_write(tag: str, runs: List[Dict[str, Any]], out_dir: Path) -> Dict[str, Any]:
     metrics = {
         "task_success_rate": task_success_rate(runs),
         "information_leakage_rate": information_leakage_rate(runs),
@@ -124,9 +122,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=False, help="Path to JSON config.")
     parser.add_argument("--out", default="experiments/out", help="Output directory")
-    parser.add_argument(
-        "--agent", choices=["weaver", "zero_shot", "broadcast"], default="weaver"
-    )
+    parser.add_argument("--agent", choices=["weaver", "zero_shot", "broadcast"], default="weaver")
     args = parser.parse_args()
 
     if args.config:

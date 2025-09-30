@@ -21,9 +21,7 @@ legacy = root / "legacy"
 if legacy.exists():
     legacy_files = [p.name for p in legacy.glob("*.md")]
     # Links should be relative to site root; legacy/<file>
-    content = "\n".join(
-        f"- [{name}](../legacy/{name})" for name in sorted(legacy_files)
-    )
+    content = "\n".join(f"- [{name}](../legacy/{name})" for name in sorted(legacy_files))
     with gen_open("legacy/index.md", "w") as f:  # type: ignore
         f.write("# 归档文档索引\n\n" + content + "\n")
 

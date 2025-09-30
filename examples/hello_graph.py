@@ -20,9 +20,7 @@ print("Initializing ChatOpenAI client...")
 if not api_base:
     # 如果没有设置自定义endpoint，就使用默认的OpenAI服务
     print("OPENAI_API_BASE not set, using default OpenAI endpoint.")
-    llm = ChatOpenAI(
-        api_key=api_key, model=model_name if model_name else "gpt-3.5-turbo"
-    )
+    llm = ChatOpenAI(api_key=api_key, model=model_name if model_name else "gpt-3.5-turbo")
 else:
     # 如果设置了自定义endpoint，就使用它
     print(f"Using custom endpoint: {api_base}")

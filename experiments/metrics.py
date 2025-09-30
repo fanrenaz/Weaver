@@ -24,9 +24,7 @@ def negotiation_efficiency(runs: List[Dict[str, Any]]) -> float:
 
     Non-successful runs are ignored for this average; if none succeeded returns 0.
     """
-    successful_turn_counts = [
-        r["turns"] for r in runs if r.get("success") and "turns" in r
-    ]
+    successful_turn_counts = [r["turns"] for r in runs if r.get("success") and "turns" in r]
     if not successful_turn_counts:
         return 0.0
     return sum(successful_turn_counts) / len(successful_turn_counts)

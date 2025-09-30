@@ -78,9 +78,7 @@ class WeaverRuntime:
             # 5. Return the last AI message content (basic v0 response shape)
             ai_msgs = [m for m in new_msgs if getattr(m, "type", "") == "ai"]
             response_text = ai_msgs[-1].content if ai_msgs else ""
-            logger.debug(
-                "Runtime invoke complete space=%s user=%s", space_id, event.user_id
-            )
+            logger.debug("Runtime invoke complete space=%s user=%s", space_id, event.user_id)
             return {
                 "space_id": space_id,
                 "user_id": event.user_id,
@@ -90,9 +88,7 @@ class WeaverRuntime:
         except PolicyError:  # allow upstream to handle
             raise
         except Exception as e:
-            logger.exception(
-                "Runtime invocation failed space=%s user=%s", space_id, event.user_id
-            )
+            logger.exception("Runtime invocation failed space=%s user=%s", space_id, event.user_id)
             raise RuntimeInvocationError(str(e)) from e
 
 

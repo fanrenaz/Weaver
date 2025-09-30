@@ -20,9 +20,7 @@ class ReplyPrivateAction(BaseModel):
         description="Discriminator identifying this action type.",
         default="reply_private",
     )
-    recipient: str = Field(
-        description="Target user id / name to receive the private reply."
-    )
+    recipient: str = Field(description="Target user id / name to receive the private reply.")
     content: str = Field(description="Natural language content of the private reply.")
 
 
@@ -33,9 +31,7 @@ class PostToSharedAction(BaseModel):
         description="Discriminator identifying this action type.",
         default="post_to_shared",
     )
-    content: str = Field(
-        description="Message content to broadcast to the shared space."
-    )
+    content: str = Field(description="Message content to broadcast to the shared space.")
 
 
 ActionUnion = ReplyPrivateAction | PostToSharedAction

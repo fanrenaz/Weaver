@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 def _get_llm():
     api_key = os.getenv("OPENAI_API_KEY")
     if api_key:
-        return ChatOpenAI(
-            model=os.getenv("WEAVER_MODEL", "gpt-4o-mini"), api_key=api_key
-        )
+        return ChatOpenAI(model=os.getenv("WEAVER_MODEL", "gpt-4o-mini"), api_key=api_key)
     # fallback fake deterministic sequence
     fake = FakeListLLM(
         responses=[
@@ -44,10 +42,7 @@ class ZeroShotBaseline:
         self.llm = _get_llm()
 
     def run(self, conversation: List[str]) -> Dict[str, Any]:
-        prompt = (
-            "\n".join(conversation)
-            + "\n请直接给出一个双方都可能接受的单一成交价格数值。"
-        )
+        prompt = "\n".join(conversation) + "\n请直接给出一个双方都可能接受的单一成交价格数值。"
         ai = self.llm.invoke([HumanMessage(content=prompt)])
         return {"final_price": ai.content, "raw": ai.content}
 
