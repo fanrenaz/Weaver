@@ -4,6 +4,19 @@ version = "0.0.1"
 description = "A native framework for building collaborative AI."
 readme = "README.md"
 requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [
+    {name = "REN Yifan"}
+]
+keywords = ["agents", "ai", "collaboration", "mediation", "langchain", "framework"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+]
 dependencies = [
     "langchain",
     "langgraph",
@@ -12,6 +25,11 @@ dependencies = [
     "python-dotenv",
     "langchain-community"
 ]
+[project.urls]
+Homepage = "https://github.com/fanrenaz/Weaver"
+Documentation = "https://github.com/fanrenaz/Weaver#readme"
+Source = "https://github.com/fanrenaz/Weaver"
+Issues = "https://github.com/fanrenaz/Weaver/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -25,3 +43,23 @@ dev = [
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
 ]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["weaver*"]
+exclude = ["tests*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
