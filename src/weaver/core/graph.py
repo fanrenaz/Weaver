@@ -19,6 +19,10 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 
 from weaver.models.state import SpaceState
+from dotenv import load_dotenv
+
+# Load environment variables from a local .env file if present (Phase 2.2+ runtime convenience)
+load_dotenv()
 from weaver.building_blocks.tools import TOOLS
 
 logger = logging.getLogger(__name__)
@@ -39,32 +43,27 @@ class WeaverGraph:
         # LLM configured from environment for portability.
         llm_model = os.getenv("WEAVER_MODEL", "gpt-5-mini")
         api_key = os.getenv("OPENAI_API_KEY")  # rely on user environment
-        api_base = os.getenv("OPENAI_BASE_URL")
+        # Support both variable names: OPENAI_API_BASE (preferred) and legacy OPENAI_BASE_URL
+        api_base = os.getenv("OPENAI_API_BASE") or os.getenv("OPENAI_BASE_URL")
 
         if api_key:
-            extra_kwargs: Dict[str, Any] = {}
-            if api_base:
-                extra_kwargs["openai_api_base"] = api_base
-            extra_kwargs["api_key"] = api_key
-            llm = ChatOpenAI(model=llm_model, **extra_kwargs)
+            try:
+                extra_kwargs: Dict[str, Any] = {}
+                if api_base:
+                    # ChatOpenAI accepts openai_api_base in recent langchain_openai versions
+                    extra_kwargs["openai_api_base"] = api_base
+                extra_kwargs["api_key"] = api_key
+                llm = ChatOpenAI(model=llm_model, **extra_kwargs)
+            except Exception as e:  # pragma: no cover
+                logger.warning(
+                    "Failed to initialize ChatOpenAI (%s); falling back to FakeListLLM", e
+                )
+                llm = self._build_fallback_llm()
         else:
-            # Fallback deterministic fake model for offline demo usage.
-            logger.warning("OPENAI_API_KEY not set; falling back to FakeListLLM")
-            base_fake = FakeListLLM(responses=[
-                "(模拟) 我理解你在财务沟通上的压力。你可以进一步说明彼此的主要关切点吗？",
-                "(模拟) 你希望建立更大的应急储备，而同时保持一定的生活质量。",
-                "(模拟) 建议：共同制定一个包含储蓄、必要支出和灵活娱乐额度的三段式预算。你们觉得可行吗？",
-            ])
-
-            class _WrappedFake(Runnable):  # type: ignore[misc]
-                def invoke(self, messages, config=None):  # type: ignore[override]
-                    text = base_fake.invoke(messages)
-                    return AIMessage(content=text)
-
-                def bind_tools(self, tools):  # mimic ChatOpenAI API
-                    return self
-
-            llm = _WrappedFake()
+            logger.warning(
+                "OPENAI_API_KEY absent; using FakeListLLM fallback (set in .env or env vars to enable real LLM)."
+            )
+            llm = self._build_fallback_llm()
         self._llm = llm
         self._system_prompt = system_prompt or DEFAULT_SYSTEM_PROMPT
         self.app = self._build_graph()
@@ -102,6 +101,27 @@ class WeaverGraph:
         )
         workflow.add_edge("tools", "agent")  # ReAct loop
         return workflow.compile()
+
+    @staticmethod
+    def _build_fallback_llm():
+        """Construct a deterministic fallback LLM for offline / missing key scenarios."""
+        base_fake = FakeListLLM(
+            responses=[
+                "(模拟) 我理解你在财务沟通上的压力。你可以进一步说明彼此的主要关切点吗？",
+                "(模拟) 你希望建立更大的应急储备，而同时保持一定的生活质量。",
+                "(模拟) 建议：共同制定一个包含储蓄、必要支出和灵活娱乐额度的三段式预算。你们觉得可行吗？",
+            ]
+        )
+
+        class _WrappedFake(Runnable):  # type: ignore[misc]
+            def invoke(self, messages, config=None):  # type: ignore[override]
+                text = base_fake.invoke(messages)
+                return AIMessage(content=text)
+
+            def bind_tools(self, tools):  # mimic ChatOpenAI API
+                return self
+
+        return _WrappedFake()
 
 
 # --------------- Conditional Router ---------------
