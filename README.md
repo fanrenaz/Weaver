@@ -163,3 +163,21 @@ create_state_adapter_runnable() -> WeaverGraph().app -> output normalizer
 ```
 
 它允许使用标准 `RunnableWithMessageHistory` 进行会话记忆管理，无需让外部调用者了解内部 `SpaceState` 结构。示例脚本 `examples/cli_demo/financial_counseling.py` 展示了多会话隔离与“上帝视角”会话的上下文累积。
+
+## 附录：Phase 2.1 运行时框架化
+
+引入 `Policy` (`MediationPolicy`)、`MemoryCoordinator` 与 `WeaverRuntime`：
+
+```python
+from weaver.runtime.policy import MediationPolicy
+from weaver.runtime.runtime import WeaverRuntime
+from weaver.models.events import UserMessageEvent
+
+policy = MediationPolicy.default()
+runtime = WeaverRuntime(policy=policy)
+event = UserMessageEvent(user_id="jane", content="我们最近在储蓄上有争执……")
+result = runtime.invoke(space_id="counseling_123", event=event)
+print(result["response"])
+```
+
+`Policy.format_system_prompt()` 负责将策略语义转化为系统提示；`MemoryCoordinator` 当前为单一共享历史，未来将扩展为多视角选择性拼接；`WeaverRuntime` 对外提供声明式 `invoke` 接口，隐藏底层图与适配器细节。

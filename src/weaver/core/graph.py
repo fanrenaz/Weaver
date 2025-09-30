@@ -23,7 +23,7 @@ from weaver.building_blocks.tools import TOOLS
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = (
+DEFAULT_SYSTEM_PROMPT = (
     "You are Weaver, a neutral financial mediation assistant facilitating "
     "constructive, empathetic dialogue between partners about finances. "
     "You choose tools to either privately reassure/probe or to broadcast "
@@ -35,7 +35,7 @@ SYSTEM_PROMPT = (
 class WeaverGraph:
     """Builds and compiles the LangGraph state machine for the agent."""
 
-    def __init__(self) -> None:
+    def __init__(self, system_prompt: str | None = None) -> None:
         # LLM configured from environment for portability.
         llm_model = os.getenv("WEAVER_MODEL", "gpt-5-mini")
         api_key = os.getenv("OPENAI_API_KEY")  # rely on user environment
@@ -66,6 +66,7 @@ class WeaverGraph:
 
             llm = _WrappedFake()
         self._llm = llm
+        self._system_prompt = system_prompt or DEFAULT_SYSTEM_PROMPT
         self.app = self._build_graph()
 
     # ---------------- Agent Node -----------------
@@ -76,7 +77,7 @@ class WeaverGraph:
         or None signaling the loop should end.
         """
         bound_llm = self._llm.bind_tools(TOOLS)
-        messages = [SystemMessage(content=SYSTEM_PROMPT)] + state.get("input", [])
+        messages = [SystemMessage(content=self._system_prompt)] + state.get("input", [])
         response = bound_llm.invoke(messages)
         if not isinstance(response, AIMessage):
             logger.warning("Agent response not AIMessage: %s", type(response))
