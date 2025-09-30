@@ -1,0 +1,72 @@
+{
+  "task_success_rate": 0.2,
+  "information_leakage_rate": 1.0,
+  "negotiation_efficiency": 1.0,
+  "runs": [
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "买家最高预算 120",
+        "卖家最低心理价 80",
+        "请直接给出成交价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "买家最高预算 120",
+        "卖家最低心理价 80",
+        "请直接给出成交价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": true,
+      "agreement_price": 100,
+      "turns": 1,
+      "history": [
+        "买家最高预算 120",
+        "卖家最低心理价 80",
+        "请直接给出成交价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "买家最高预算 120",
+        "卖家最低心理价 80",
+        "请直接给出成交价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "买家最高预算 120",
+        "卖家最低心理价 80",
+        "请直接给出成交价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    }
+  ]
+}

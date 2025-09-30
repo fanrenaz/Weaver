@@ -181,3 +181,26 @@ print(result["response"])
 ```
 
 `Policy.format_system_prompt()` 负责将策略语义转化为系统提示；`MemoryCoordinator` 当前为单一共享历史，未来将扩展为多视角选择性拼接；`WeaverRuntime` 对外提供声明式 `invoke` 接口，隐藏底层图与适配器细节。
+
+## 附录：Phase 2.2 实验平台
+
+新增 `experiments/` 目录，支持复现性研究：
+
+结构:
+- `experiments/runner.py`: 统一入口，可选择 `weaver|zero_shot|broadcast`。
+- `experiments/tasks/negotiation.py`: 商业谈判任务模拟。
+- `experiments/baselines.py`: 基线实现（ZeroShot / Broadcast）。
+- `experiments/metrics.py`: 指标函数：成功率、信息泄露率、谈判效率。
+
+快速运行示例：
+```bash
+python -m experiments.runner --agent weaver
+python -m experiments.runner --agent zero_shot
+python -m experiments.runner --agent broadcast
+```
+默认配置下（离线 Fake LLM 回退示例输出）可见：
+- Weaver: 较高成功率、低泄露
+- Broadcast: 高泄露，成功率低
+- ZeroShot: 中等表现，常泄露私密区间
+
+生成结果写入 `experiments/out/results_<agent>.json`，便于后续论文数据统计。

@@ -1,0 +1,67 @@
+{
+  "task_success_rate": 1.0,
+  "information_leakage_rate": 0.0,
+  "negotiation_efficiency": 2.0,
+  "runs": [
+    {
+      "success": true,
+      "agreement_price": 100,
+      "turns": 2,
+      "history": [
+        "buyer:100",
+        "seller:100"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 0
+    },
+    {
+      "success": true,
+      "agreement_price": 100,
+      "turns": 2,
+      "history": [
+        "buyer:100",
+        "seller:100"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 0
+    },
+    {
+      "success": true,
+      "agreement_price": 100,
+      "turns": 2,
+      "history": [
+        "buyer:100",
+        "seller:100"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 0
+    },
+    {
+      "success": true,
+      "agreement_price": 100,
+      "turns": 2,
+      "history": [
+        "buyer:100",
+        "seller:100"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 0
+    },
+    {
+      "success": true,
+      "agreement_price": 100,
+      "turns": 2,
+      "history": [
+        "buyer:100",
+        "seller:100"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 0
+    }
+  ]
+}

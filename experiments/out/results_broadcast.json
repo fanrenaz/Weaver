@@ -1,0 +1,62 @@
+{
+  "task_success_rate": 0.0,
+  "information_leakage_rate": 1.0,
+  "negotiation_efficiency": 0.0,
+  "runs": [
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "(基线) 建议达成中间价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "(基线) 建议达成中间价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "(基线) 建议达成中间价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "(基线) 建议达成中间价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    },
+    {
+      "success": false,
+      "agreement_price": null,
+      "turns": 1,
+      "history": [
+        "(基线) 建议达成中间价。"
+      ],
+      "buyer_max": 120,
+      "seller_min": 80,
+      "leakage": 1
+    }
+  ]
+}
