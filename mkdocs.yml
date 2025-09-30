@@ -1,5 +1,6 @@
 site_name: Weaver AI
 site_description: 一个用于构建协作式AI的原生框架
+site_url: https://fanrenaz.github.io/Weaver/
 repo_url: https://github.com/fanrenaz/Weaver
 plugins:
   - search
