@@ -32,12 +32,25 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install .[dev]
-      - name: Build MkDocs site
-        run: mkdocs build --strict
+      - name: Build MkDocs site (clean)
+        run: |
+          rm -rf _site site
+          mkdocs build --strict -d _site
+      - name: Validate artifact directory
+        run: |
+          set -e
+          disallowed=$(find _site -maxdepth 2 -type d \( -name src -o -name tests -o -name .github \) | wc -l)
+          if [ "$disallowed" -ne 0 ]; then
+            echo "Found disallowed directories in output" >&2
+            find _site -maxdepth 3 -type d -name src -o -name tests -o -name .github >&2 || true
+            exit 1
+          fi
+          # Ensure index.html exists
+          test -f _site/index.html || (echo "index.html missing" >&2; exit 1)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: _site
   deploy:
     environment:
       name: github-pages
