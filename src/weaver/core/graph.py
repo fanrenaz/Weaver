@@ -13,18 +13,17 @@ from typing import Any, Dict, Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.language_models.fake import FakeListLLM
 from langchain_core.runnables import Runnable
-from langchain_core.messages import AIMessage
 from langchain_core.messages import SystemMessage, AIMessage
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 
 from weaver.models.state import SpaceState
 from dotenv import load_dotenv
+from weaver.building_blocks.tools import TOOLS
+from weaver.exceptions import ConfigurationError, ToolExecutionError
 
 # Load environment variables from a local .env file if present (Phase 2.2+ runtime convenience)
 load_dotenv()
-from weaver.building_blocks.tools import TOOLS
-from weaver.exceptions import ConfigurationError, ToolExecutionError
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +109,7 @@ class WeaverGraph:
     @staticmethod
     def _build_fallback_llm():
         """Construct a deterministic fallback LLM for offline / missing key scenarios."""
-        base_fake = FakeListLLM(
+        base_fake = FakeListLLM(  # type: ignore[call-arg]
             responses=[
                 "(模拟) 我理解你在财务沟通上的压力。你可以进一步说明彼此的主要关切点吗？",
                 "(模拟) 你希望建立更大的应急储备，而同时保持一定的生活质量。",

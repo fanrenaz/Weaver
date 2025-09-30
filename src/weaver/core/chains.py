@@ -7,7 +7,7 @@ use of `RunnableWithMessageHistory`.
 """
 from __future__ import annotations
 
-from typing import Dict, List, Any
+from typing import Dict, Any
 from langchain_core.messages import BaseMessage
 from langchain_core.runnables import RunnableLambda
 
