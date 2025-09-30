@@ -5,6 +5,7 @@ Phase 1.3 introduces an adapter runnable so that a plain dict input
 `SpaceState` required by the compiled LangGraph. This allows seamless
 use of `RunnableWithMessageHistory`.
 """
+
 from __future__ import annotations
 
 from typing import Dict, Any

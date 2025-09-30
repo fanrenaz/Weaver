@@ -1,4 +1,5 @@
 """WeaverRuntime orchestrates policy + memory + core graph execution."""
+
 from __future__ import annotations
 
 from typing import Dict, List
@@ -55,7 +56,12 @@ class WeaverRuntime:
         self._chain = adapter | self.graph.app
 
     def invoke(self, space_id: str, event: UserMessageEvent):
-        logger.debug("Invoke called space=%s user=%s content_len=%d", space_id, event.user_id, len(event.content))
+        logger.debug(
+            "Invoke called space=%s user=%s content_len=%d",
+            space_id,
+            event.user_id,
+            len(event.content),
+        )
         try:
             # 1. Retrieve context
             context_msgs = self.memory.prepare_context(space_id, event.user_id)
@@ -70,9 +76,11 @@ class WeaverRuntime:
             new_msgs = result_state.get("input", [])
             self.memory.append(space_id, new_msgs)
             # 5. Return the last AI message content (basic v0 response shape)
-            ai_msgs = [m for m in new_msgs if getattr(m, 'type', '') == 'ai']
+            ai_msgs = [m for m in new_msgs if getattr(m, "type", "") == "ai"]
             response_text = ai_msgs[-1].content if ai_msgs else ""
-            logger.debug("Runtime invoke complete space=%s user=%s", space_id, event.user_id)
+            logger.debug(
+                "Runtime invoke complete space=%s user=%s", space_id, event.user_id
+            )
             return {
                 "space_id": space_id,
                 "user_id": event.user_id,
@@ -82,7 +90,9 @@ class WeaverRuntime:
         except PolicyError:  # allow upstream to handle
             raise
         except Exception as e:
-            logger.exception("Runtime invocation failed space=%s user=%s", space_id, event.user_id)
+            logger.exception(
+                "Runtime invocation failed space=%s user=%s", space_id, event.user_id
+            )
             raise RuntimeInvocationError(str(e)) from e
 
 

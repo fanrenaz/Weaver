@@ -1,4 +1,5 @@
 """Event models representing external inputs entering the system."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
@@ -12,7 +13,8 @@ class UserMessageEvent(BaseModel):
     """
 
     type: Literal["user_message"] = Field(
-        description="Event discriminator identifying a user message event.", default="user_message"
+        description="Event discriminator identifying a user message event.",
+        default="user_message",
     )
     user_id: str = Field(description="Unique identifier (or display name) of the user.")
     content: str = Field(description="Plain text content of the user's message.")

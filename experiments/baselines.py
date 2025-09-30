@@ -1,4 +1,5 @@
 """Baseline strategies for comparison with WeaverRuntime mediation."""
+
 from __future__ import annotations
 
 from typing import List, Dict, Any
@@ -16,13 +17,17 @@ logger = logging.getLogger(__name__)
 def _get_llm():
     api_key = os.getenv("OPENAI_API_KEY")
     if api_key:
-        return ChatOpenAI(model=os.getenv("WEAVER_MODEL", "gpt-4o-mini"), api_key=api_key)
+        return ChatOpenAI(
+            model=os.getenv("WEAVER_MODEL", "gpt-4o-mini"), api_key=api_key
+        )
     # fallback fake deterministic sequence
-    fake = FakeListLLM(responses=[
-        "(基线) 建议达成中间价。",
-        "(基线) 双方可在此价格上继续。",
-        "(基线) 最终成交价建议为 100。",
-    ])
+    fake = FakeListLLM(
+        responses=[
+            "(基线) 建议达成中间价。",
+            "(基线) 双方可在此价格上继续。",
+            "(基线) 最终成交价建议为 100。",
+        ]
+    )
 
     class _Wrap(Runnable):
         def invoke(self, messages, config=None):  # type: ignore[override]
@@ -39,7 +44,10 @@ class ZeroShotBaseline:
         self.llm = _get_llm()
 
     def run(self, conversation: List[str]) -> Dict[str, Any]:
-        prompt = "\n".join(conversation) + "\n请直接给出一个双方都可能接受的单一成交价格数值。"
+        prompt = (
+            "\n".join(conversation)
+            + "\n请直接给出一个双方都可能接受的单一成交价格数值。"
+        )
         ai = self.llm.invoke([HumanMessage(content=prompt)])
         return {"final_price": ai.content, "raw": ai.content}
 

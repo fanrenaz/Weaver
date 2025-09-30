@@ -4,6 +4,7 @@ Phase 1.2 focuses on a minimal agent with two tools:
 - reply_privately
 - post_to_shared
 """
+
 from __future__ import annotations
 
 import os
@@ -39,7 +40,9 @@ DEFAULT_SYSTEM_PROMPT = (
 class WeaverGraph:
     """Builds and compiles the LangGraph state machine for the agent."""
 
-    def __init__(self, system_prompt: str | None = None, llm: Optional[Any] = None) -> None:
+    def __init__(
+        self, system_prompt: str | None = None, llm: Optional[Any] = None
+    ) -> None:
         # Allow injection (for tests) else configure from environment.
         if llm is None:
             llm_model = os.getenv("WEAVER_MODEL", "gpt-5-mini")
@@ -54,7 +57,8 @@ class WeaverGraph:
                     llm = ChatOpenAI(model=llm_model, **extra_kwargs)
                 except Exception as e:  # pragma: no cover
                     logger.warning(
-                        "Failed to initialize ChatOpenAI (%s); falling back to FakeListLLM", e
+                        "Failed to initialize ChatOpenAI (%s); falling back to FakeListLLM",
+                        e,
                     )
                     llm = self._build_fallback_llm()
             else:
@@ -75,7 +79,9 @@ class WeaverGraph:
         """
         try:
             bound_llm = self._llm.bind_tools(TOOLS)
-            messages = [SystemMessage(content=self._system_prompt)] + state.get("input", [])
+            messages = [SystemMessage(content=self._system_prompt)] + state.get(
+                "input", []
+            )
             response = bound_llm.invoke(messages)
         except ConfigurationError:
             raise
@@ -129,6 +135,7 @@ class WeaverGraph:
 
 
 # --------------- Conditional Router ---------------
+
 
 def _should_continue_node(state: SpaceState) -> str:
     calls = state.get("action_to_execute")

@@ -21,7 +21,9 @@ class _DeterministicFake(FakeListLLM):
 def test_graph_invoke_with_fake_llm():
     fake = _DeterministicFake()
     graph = WeaverGraph(system_prompt="SYSTEM", llm=fake)
-    state: SpaceState = {"input": [HumanMessage(content="你好", additional_kwargs={"user_id": "u1"})]}
+    state: SpaceState = {
+        "input": [HumanMessage(content="你好", additional_kwargs={"user_id": "u1"})]
+    }
     result = graph.app.invoke(state)
     # The agent node should have appended an AI message
     msgs = result.get("input", [])

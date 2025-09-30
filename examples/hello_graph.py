@@ -12,7 +12,7 @@ load_dotenv()
 # os.getenv() 在找不到时会返回 None，这很安全
 api_base = os.getenv("OPENAI_API_BASE")
 api_key = os.getenv("OPENAI_API_KEY")
-model_name = os.getenv("OPENAI_MODEL_NAME") # 可选
+model_name = os.getenv("OPENAI_MODEL_NAME")  # 可选
 
 # --- 2. 检查配置并初始化LLM客户端 ---
 print("Initializing ChatOpenAI client...")
@@ -20,14 +20,18 @@ print("Initializing ChatOpenAI client...")
 if not api_base:
     # 如果没有设置自定义endpoint，就使用默认的OpenAI服务
     print("OPENAI_API_BASE not set, using default OpenAI endpoint.")
-    llm = ChatOpenAI(api_key=api_key, model=model_name if model_name else "gpt-3.5-turbo")
+    llm = ChatOpenAI(
+        api_key=api_key, model=model_name if model_name else "gpt-3.5-turbo"
+    )
 else:
     # 如果设置了自定义endpoint，就使用它
     print(f"Using custom endpoint: {api_base}")
     llm = ChatOpenAI(
         base_url=api_base,
         api_key=api_key,
-        model=model_name if model_name else None # 如果是本地模型，可能不需要指定模型名称，或者需要指定一个特定的名称
+        model=(
+            model_name if model_name else None
+        ),  # 如果是本地模型，可能不需要指定模型名称，或者需要指定一个特定的名称
     )
 
 print("ChatOpenAI client initialized successfully.")
@@ -40,7 +44,7 @@ try:
         content="Hello! Please reply with a short confirmation that you received this message."
     )
     response = llm.invoke([message])
-    
+
     print("\n[SUCCESS] LLM call successful!")
     print("Response from model:")
     print("--------------------")

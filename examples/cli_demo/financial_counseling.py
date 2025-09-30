@@ -2,6 +2,7 @@
 
 Now uses WeaverRuntime + MediationPolicy for a declarative flow.
 """
+
 from __future__ import annotations
 
 from typing import Dict
@@ -19,6 +20,7 @@ def get_session_history(session_id: str) -> InMemoryChatMessageHistory:
 
 # ------------------ Helper Function ------------------
 
+
 def run_turn(runtime: WeaverRuntime, space_id: str, user_id: str, content: str):
     event = UserMessageEvent(user_id=user_id, content=content)
     result = runtime.invoke(space_id=space_id, event=event)
@@ -29,6 +31,7 @@ def run_turn(runtime: WeaverRuntime, space_id: str, user_id: str, content: str):
 
 
 # ------------------ Main Demo ------------------
+
 
 def main():
     policy = MediationPolicy.default()
@@ -43,7 +46,9 @@ def main():
     ]
 
     for turn in conversation:
-        run_turn(runtime, space_id, "jane", turn)  # simulate jane speaking all for brevity
+        run_turn(
+            runtime, space_id, "jane", turn
+        )  # simulate jane speaking all for brevity
 
     # Additional participants
     run_turn(runtime, space_id, "john", "我觉得我们可以稍微多花一点在体验上。")

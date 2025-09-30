@@ -6,7 +6,9 @@ formatting problems, runtime orchestration failures and tool execution
 errors. Keep the hierarchy shallow for now; expand in future phases
 when adding persistence, network IO, etc.
 """
+
 from __future__ import annotations
+
 
 class WeaverError(Exception):
     """Base class for all custom Weaver exceptions."""

@@ -3,6 +3,7 @@
 Usage (example):
     python -m experiments.runner --config experiments/sample_config.json
 """
+
 from __future__ import annotations
 
 import json
@@ -45,17 +46,22 @@ def run_zero_shot(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
         # naive parse attempt
         price = _extract_int(r["final_price"]) if r.get("final_price") else None
         success = False
-        if price is not None and batch_cfg['seller_min_price'] <= price <= batch_cfg['buyer_max_budget']:
+        if (
+            price is not None
+            and batch_cfg["seller_min_price"] <= price <= batch_cfg["buyer_max_budget"]
+        ):
             success = True
-        runs.append({
-            "success": success,
-            "agreement_price": price,
-            "turns": 1,
-            "history": convo,
-            "buyer_max": batch_cfg['buyer_max_budget'],
-            "seller_min": batch_cfg['seller_min_price'],
-            "leakage": 1,  # this baseline exposes values directly
-        })
+        runs.append(
+            {
+                "success": success,
+                "agreement_price": price,
+                "turns": 1,
+                "history": convo,
+                "buyer_max": batch_cfg["buyer_max_budget"],
+                "seller_min": batch_cfg["seller_min_price"],
+                "leakage": 1,  # this baseline exposes values directly
+            }
+        )
     return runs
 
 
@@ -69,17 +75,22 @@ def run_broadcast(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
         r = baseline.run()
         price = _extract_int(r["final_price"]) if r.get("final_price") else None
         success = False
-        if price is not None and batch_cfg['seller_min_price'] <= price <= batch_cfg['buyer_max_budget']:
+        if (
+            price is not None
+            and batch_cfg["seller_min_price"] <= price <= batch_cfg["buyer_max_budget"]
+        ):
             success = True
-        runs.append({
-            "success": success,
-            "agreement_price": price,
-            "turns": 1,
-            "history": [r["raw"]],
-            "buyer_max": batch_cfg['buyer_max_budget'],
-            "seller_min": batch_cfg['seller_min_price'],
-            "leakage": 1,
-        })
+        runs.append(
+            {
+                "success": success,
+                "agreement_price": price,
+                "turns": 1,
+                "history": [r["raw"]],
+                "buyer_max": batch_cfg["buyer_max_budget"],
+                "seller_min": batch_cfg["seller_min_price"],
+                "leakage": 1,
+            }
+        )
     return runs
 
 
@@ -87,13 +98,16 @@ def _extract_int(text: str | None) -> int | None:
     if not text:
         return None
     import re
+
     nums = re.findall(r"(\d+)", text)
     if not nums:
         return None
     return int(nums[0])
 
 
-def aggregate_and_write(tag: str, runs: List[Dict[str, Any]], out_dir: Path) -> Dict[str, Any]:
+def aggregate_and_write(
+    tag: str, runs: List[Dict[str, Any]], out_dir: Path
+) -> Dict[str, Any]:
     metrics = {
         "task_success_rate": task_success_rate(runs),
         "information_leakage_rate": information_leakage_rate(runs),
@@ -110,7 +124,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=False, help="Path to JSON config.")
     parser.add_argument("--out", default="experiments/out", help="Output directory")
-    parser.add_argument("--agent", choices=["weaver", "zero_shot", "broadcast"], default="weaver")
+    parser.add_argument(
+        "--agent", choices=["weaver", "zero_shot", "broadcast"], default="weaver"
+    )
     args = parser.parse_args()
 
     if args.config:
@@ -134,7 +150,13 @@ def main():
         runs = run_broadcast(cfg)
 
     metrics = aggregate_and_write(args.agent, runs, out_dir)
-    print(json.dumps({"agent": args.agent, **metrics, "runs": "<omitted>"}, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {"agent": args.agent, **metrics, "runs": "<omitted>"},
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

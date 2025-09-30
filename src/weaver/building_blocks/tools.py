@@ -4,6 +4,7 @@ These functions are intentionally simple; they log their usage and return a
 string that becomes the agent's observation. In future phases these will
 integrate with persistence, notification systems, etc.
 """
+
 from __future__ import annotations
 
 import logging

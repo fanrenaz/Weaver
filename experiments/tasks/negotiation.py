@@ -1,4 +1,5 @@
 """Negotiation task environment and simulation utilities."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -48,7 +49,10 @@ def simulate_weaver_negotiation(cfg: NegotiationConfig) -> Dict[str, Any]:
         history.append(f"seller:{seller_offer}")
 
         # Check overlap region -> agreement
-        if buyer_offer >= seller_offer and cfg.seller_min_price <= buyer_offer <= cfg.buyer_max_budget:
+        if (
+            buyer_offer >= seller_offer
+            and cfg.seller_min_price <= buyer_offer <= cfg.buyer_max_budget
+        ):
             agreement_price = seller_offer
             break
 

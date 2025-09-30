@@ -3,6 +3,7 @@
 Phase 2.1 introduces a simple mediation policy that can format the system
 prompt consumed by the core graph.
 """
+
 from __future__ import annotations
 
 from typing import List

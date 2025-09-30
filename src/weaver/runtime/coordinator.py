@@ -3,6 +3,7 @@
 Phase 2.1 keeps logic minimal: gather history for a given space and optionally
 merge across participants if policy implies a "god view" (future flag).
 """
+
 from __future__ import annotations
 
 from typing import Dict, List
