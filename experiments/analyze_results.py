@@ -30,6 +30,7 @@ def load_runs(files: List[str]) -> pd.DataFrame:
                     "success": int(bool(r.get("success"))),
                     "leakage": int(1 if r.get("leakage", 0) else 0),
                     "efficiency": r.get("turns", 0),
+                    "relationship_score": r.get("relationship_score"),
                 }
             )
     return pd.DataFrame(records)
@@ -41,6 +42,8 @@ def summarize(df: pd.DataFrame) -> pd.DataFrame:
         leakage_rate=("leakage", "mean"),
         efficiency_mean=("efficiency", "mean"),
         efficiency_std=("efficiency", "std"),
+        relationship_mean=("relationship_score", "mean"),
+        relationship_std=("relationship_score", "std"),
         n=("success", "count"),
     )
     return grouped.reset_index()
@@ -77,7 +80,9 @@ def main():
     outdir = Path(args.outdir)
     plot_bar(summary, "success_rate", "Task Success Rate", outdir / "success_rate.png")
     plot_bar(summary, "leakage_rate", "Information Leakage Rate", outdir / "leakage_rate.png")
-    plot_bar(summary, "efficiency_mean", "Negotiation Efficiency (turns)", outdir / "efficiency.png")
+    plot_bar(summary, "efficiency_mean", "Efficiency (turns)", outdir / "efficiency.png")
+    if "relationship_mean" in summary.columns:
+        plot_bar(summary, "relationship_mean", "Relationship Score", outdir / "relationship.png")
 
     # Write summary markdown
     try:

@@ -29,8 +29,19 @@ def negotiation_efficiency(runs: List[Dict[str, Any]]) -> float:
     return sum(successful_turn_counts) / len(successful_turn_counts)
 
 
+def relationship_score(runs: List[Dict[str, Any]]) -> float:
+    if not runs:
+        return 0.0
+    raw = [r.get("relationship_score") for r in runs]
+    vals = [float(v) for v in raw if v is not None]
+    if not vals:
+        return 0.0
+    return sum(vals) / len(vals)
+
+
 __all__ = [
     "task_success_rate",
     "information_leakage_rate",
     "negotiation_efficiency",
+    "relationship_score",
 ]
