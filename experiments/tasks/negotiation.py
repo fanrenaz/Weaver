@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List
 import random
 
 from weaver.runtime.policy import MediationPolicy
@@ -15,9 +15,14 @@ class NegotiationConfig:
     buyer_max_budget: int
     seller_min_price: int
     max_rounds: int = 8
+    buyer_step: int = 1
+    seller_step: int = 1
+    seed: int | None = None
 
 
 def simulate_weaver_negotiation(cfg: NegotiationConfig) -> Dict[str, Any]:
+    if cfg.seed is not None:
+        random.seed(cfg.seed)
     policy = MediationPolicy.default()
     runtime = WeaverRuntime(policy=policy)
     space_id = f"neg_{random.randint(1,1_000_000)}"
@@ -53,8 +58,8 @@ def simulate_weaver_negotiation(cfg: NegotiationConfig) -> Dict[str, Any]:
             break
 
         # Adjust offers
-        buyer_offer = max(cfg.seller_min_price, buyer_offer - 1)
-        seller_offer = min(cfg.buyer_max_budget, seller_offer + 1)
+    buyer_offer = max(cfg.seller_min_price, buyer_offer - cfg.buyer_step)
+    seller_offer = min(cfg.buyer_max_budget, seller_offer + cfg.seller_step)
 
     success = agreement_price is not None
     return {

@@ -10,6 +10,9 @@ import argparse
 import random
 from pathlib import Path
 from typing import Any, Dict, List
+import os
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tqdm import tqdm
 
 from experiments.tasks.negotiation import NegotiationConfig, simulate_weaver_negotiation
 from experiments.metrics import (
@@ -20,15 +23,35 @@ from experiments.metrics import (
 from experiments.baselines import ZeroShotBaseline, BroadcastBaseline
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=8))
+def _safe_weaver_run(cfg: NegotiationConfig) -> Dict[str, Any]:
+    return simulate_weaver_negotiation(cfg)
+
+
 def run_weaver(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
     runs: List[Dict[str, Any]] = []
-    for _ in range(batch_cfg["runs"]):
+    for i in tqdm(range(batch_cfg["runs"]), desc="WeaverRuns"):
         cfg = NegotiationConfig(
             buyer_max_budget=batch_cfg["buyer_max_budget"],
             seller_min_price=batch_cfg["seller_min_price"],
             max_rounds=batch_cfg.get("max_rounds", 8),
+            buyer_step=batch_cfg.get("buyer_step", 1),
+            seller_step=batch_cfg.get("seller_step", 1),
+            seed=batch_cfg.get("seed_base", 42) + i,
         )
-        res = simulate_weaver_negotiation(cfg)
+        try:
+            res = _safe_weaver_run(cfg)
+        except Exception as e:  # capture failure but continue
+            res = {
+                "success": False,
+                "agreement_price": None,
+                "turns": 0,
+                "history": [],
+                "buyer_max": cfg.buyer_max_budget,
+                "seller_min": cfg.seller_min_price,
+                "leakage": 0,
+                "error": str(e),
+            }
         runs.append(res)
     return runs
 
@@ -36,7 +59,7 @@ def run_weaver(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
 def run_zero_shot(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
     runs: List[Dict[str, Any]] = []
     baseline = ZeroShotBaseline()
-    for _ in range(batch_cfg["runs"]):
+    for i in tqdm(range(batch_cfg["runs"]), desc="ZeroShotRuns"):
         convo = [
             f"买家最高预算 {batch_cfg['buyer_max_budget']}",
             f"卖家最低心理价 {batch_cfg['seller_min_price']}",
@@ -62,7 +85,7 @@ def run_zero_shot(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def run_broadcast(batch_cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
     runs: List[Dict[str, Any]] = []
-    for _ in range(batch_cfg["runs"]):
+    for i in tqdm(range(batch_cfg["runs"]), desc="BroadcastRuns"):
         baseline = BroadcastBaseline(
             buyer_secret=batch_cfg["buyer_max_budget"],
             seller_secret=batch_cfg["seller_min_price"],
@@ -112,6 +135,9 @@ def main():
     parser.add_argument("--config", required=False, help="Path to JSON config.")
     parser.add_argument("--out", default="experiments/out", help="Output directory")
     parser.add_argument("--agent", choices=["weaver", "zero_shot", "broadcast"], default="weaver")
+    parser.add_argument("--num-runs", type=int, help="Override runs in config")
+    parser.add_argument("--model-name", type=str, help="Override model name env for this run")
+    parser.add_argument("--output-file", type=str, help="Explicit output file name")
     args = parser.parse_args()
 
     if args.config:
@@ -125,6 +151,13 @@ def main():
             "max_rounds": 6,
         }
 
+    if args.num_runs:
+        cfg["runs"] = args.num_runs
+
+    if args.model_name:
+        # allow override for underlying graph model usage
+        os.environ["WEAVER_MODEL"] = args.model_name
+
     out_dir = Path(args.out)
 
     if args.agent == "weaver":
@@ -135,6 +168,12 @@ def main():
         runs = run_broadcast(cfg)
 
     metrics = aggregate_and_write(args.agent, runs, out_dir)
+    if args.output_file:
+        # write a copy to specified file
+        Path(args.output_file).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output_file).write_text(
+            json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
     print(json.dumps({"agent": args.agent, **metrics, "runs": "<omitted>"}, ensure_ascii=False, indent=2))
 
 

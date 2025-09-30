@@ -10,7 +10,13 @@ dependencies = [
     "langchain-openai",
     "pydantic",
     "python-dotenv",
-    "langchain-community"
+    "langchain-community",
+    "tenacity",
+    "tqdm",
+    "pandas",
+    "matplotlib",
+    "seaborn"
+    ,"tabulate"
 ]
 
 [project.optional-dependencies]
