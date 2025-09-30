@@ -1,66 +1,60 @@
-# Weaver: 一个用于构建协作式AI的原生框架
-
-**项目代号：Weaver**  
-**版本：1.0 (概念白皮书)**  
-**作者：REN Yifan**  
-**日期：2025/09/30**
-
-## 摘要 (Abstract)
-
-我们提出 **Weaver**，一个旨在将AI从“指令执行者”提升为“协作谐和者”的全新开源框架。现有的Agent开发范式在处理多方协作时，常陷入“完全公开”或“完全隔离”的困境，难以驾驭复杂的社交动态。Weaver通过引入**“交互策略 (Interaction Policies)”**和**“多视角记忆 (Multi-Perspective Memory)”**两大核心机制，构建了一个全新的“以对话为中心”的编程模型。它使AI不再是直接干预问题的“信息中介”，而是成为一个能够通过巧妙、非侵入式引导来促进参与者达成共识的“调解者”。使用Weaver，开发者可以高效地构建出如AI商业调解员、AI团队协调员等真正具备社交智慧和协调能力的下一代AI应用。
-
-## 1. 引言 (Introduction)
-
-大语言模型（LLM）开启了AI Agent的时代，但其智慧大多局限于人机之间的“问答”或“任务执行”。当Agent进入由多个自然人组成的、充满微妙动态的协作场域时，一个根本性的挑战浮现：我们究竟希望AI扮演何种角色？
-
-现行框架往往将AI定位为一个**“信息中介”**。然而，这种定位导致了“广播或树洞”的二元困境：要么信息全盘公开，牺牲隐私与策略；要么会话完全隔离，丧失全局洞察与引导的价值。这种机械的干预模式，无法真正促进协作关系的健康发展。
-
-我们相信，更高级的AI应该扮演一个**“谐和者 (Harmonizer)”**的角色。它不直接“评判”冲突，而是通过微妙的引导“化解”分歧；它不直接“给出”方案，而是通过智慧的提问“促进”参与者自己找到共识。
-
-为了实现这一愿景，我们推出了 **Weaver**。其核心隐喻是，AI应如同一位技艺高超的**“织工(Weaver)”**，它不创造线，而是将参与者各自的“思想线索”巧妙地编织在一起，形成一幅和谐而坚韧的“协作织锦”。Weaver提供了一套全新的编程范式，让开发者能够从“指令式干预”的思维中解放出来，专注于设计一个能促进积极涌现的“协作生态系统”。
-
-## 2. 核心概念与设计哲学 (Core Concepts & Philosophy)
-
-### 2.1 核心范式：从“行为指令”到“空间协调”
-
-Weaver的哲学核心是从指令AI“做什么”，转变为构建一个让智慧“能发生”的环境。
-
-*   **传统范式：行为指令 (Behavioral Instruction)**
-    开发者如同木偶师，通过复杂的Prompt或逻辑链，试图精确控制AI的每一步言行。这种方式脆弱且限制了AI的潜力。
-
-*   **Weaver范式：空间协调 (Spatial Coordination)**
-    开发者如同生态设计师，通过定义一个具备规则的**“协作空间 (Space)”**，来创造一个“微气候”。AI在这个“气候”中，其富有智慧和情商的调解行为得以**自然涌现 (Emerge)**，而非被刻板地规定。
-
-### 2.2 签名级API：`Space` 与 `Policy`
-
-Weaver的API设计旨在体现“空间协调”的哲学。开发者通过声明式的`Policy`来为`Space`注入“价值观”和“行为准则”。
-
-```python
-from weaver import Space
-from weaver.policies import MediationPolicy
-
-# 1. 定义一个“调解式”交互策略
 <div align="center">
 
-# Weaver AI
+# Weaver
 
-_协作式 / 调解式智能体运行时框架_
+_A native framework for building collaborative / mediation-oriented AI agents_
 
-[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](./) [![Docs](https://img.shields.io/badge/docs-mkdocs--material-blue)](./) [![License](https://img.shields.io/badge/license-Apache%202.0-lightgrey)](LICENSE)
+[![CI](https://github.com/fanrenaz/Weaver/actions/workflows/ci.yml/badge.svg)](https://github.com/fanrenaz/Weaver/actions/workflows/ci.yml)
+[![Docs Deploy](https://github.com/fanrenaz/Weaver/actions/workflows/pages.yml/badge.svg)](https://github.com/fanrenaz/Weaver/actions/workflows/pages.yml)
+[![PyPI](https://img.shields.io/pypi/v/weaver-ai.svg)](https://pypi.org/project/weaver-ai/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/weaver-ai.svg)](https://pypi.org/project/weaver-ai/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-lightgrey)](LICENSE)
+[![Lint](https://img.shields.io/badge/lint-ruff-informational)](https://github.com/astral-sh/ruff)
+[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Coverage](https://img.shields.io/badge/coverage-TBD-lightgrey)](./)
+[![Issues](https://img.shields.io/github/issues/fanrenaz/Weaver)](https://github.com/fanrenaz/Weaver/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/fanrenaz/Weaver)](https://github.com/fanrenaz/Weaver/commits/main)
 
 </div>
 
-Weaver 帮助你构建“有情境 + 会协调”的智能体：它不是简单回答，而是**引导关系与共识形成**。
+Weaver 让你的智能体从“回答工具”升级为“协作谐和者”：它通过显式的 Policy、结构化记忆与可组合的对话执行图，引导多个参与者逐步走向共识，而不是直接替他们给答案。
 
-## 特性速览
+---
 
-* Policy 驱动：显式建模角色与原则，稳定可维护
-* 多视角记忆蓝图：未来支持私域/公域上下文投影
-* LangGraph 状态图：可视化 + 可扩展 ReAct 循环
-* 离线友好：无 Key 自动 Fake LLM 回退
-* 测试 & CI：内建基本单元 / 集成测试 + GitHub Actions
+## 🔍 为什么需要 Weaver
 
-## 最小示例
+当 AI 进入多人协作（团队对齐、财务讨论、冲突调解等）场景，传统“单轮问答 + 指令式 Prompt”范式会遇到：
+
+| 典型痛点 | 表现 | Weaver 的解决方向 |
+| -------- | ---- | ----------------- |
+| 信息公开 / 隐私二元化 | 要么所有消息广播，要么完全割裂 | 规划多视角记忆 (public / scoped / derived) |
+| Prompt 难维护 | 系统提示不断拼贴扩展 | `Policy` 抽象角色 + 原则 | 
+| 协作流程不可见 | ReAct/Tool 链条隐于调用 | LangGraph 可视状态图 | 
+| 测试困难 | 难以对“语气/原则一致性”做验证 | Policy 可序列化 + Prompt formatter 可测试 |
+---
+
+## 🗺️ 路线图（摘录）
+
+* Policy 驱动：`MediationPolicy` 示例展示如何将“角色 + 原则”转为系统提示
+* 统一运行时：`WeaverRuntime` 负责组装 Policy、记忆、执行图（LangGraph）
+* 工具编排：示例工具 `reply_privately` / `post_to_shared` 展示私域与共享输出模式
+* 可替换 LLM：未配置真实 API 时可使用 Fake / 本地模型（参见测试）
+* 可测试性：Policy、Graph、工具均有独立单测
+* 渐进式记忆协调：`MemoryCoordinator` 负责为每次调用准备上下文（未来扩展粒度 / 过滤策略）
+
+---
+
+## 🚀 快速开始 (Quick Start)
+
+### 1. 安装（本地开发）
+
+```bash
+git clone https://github.com/your-org/weaver.git
+python -m venv .venv && source .venv/bin/activate
+pip install -e .[dev]
+``` 
+
+### 2. 最小示例
 
 ```python
 from weaver.runtime.policy import MediationPolicy
@@ -68,48 +62,113 @@ from weaver.runtime.runtime import WeaverRuntime
 from weaver.models.events import UserMessageEvent
 
 runtime = WeaverRuntime(MediationPolicy.default())
-out = runtime.invoke("demo", UserMessageEvent(user_id="alice", content="我们需要一个预算计划"))
-print(out["response"])
+result = runtime.invoke(
+    space_id="demo_space",
+    event=UserMessageEvent(user_id="alice", content="我们需要一个预算计划")
+)
+print(result["response"])  # AI 回复文本
 ```
 
-## 安装 & 文档
+### 3. 运行 CLI 示例
 
-参考 docs: `installation.md`, `getting_started.md`。
+```bash
+python examples/cli_demo/financial_counseling.py
+```
 
-## 生态定位
+### 4. （可选）真实 LLM 接入
 
-与 LangChain/ LangGraph 互补：它们负责“能力”，Weaver 负责“协作语义 + 编排”。
+在项目根目录创建 `.env`：
 
-## 路线图 (节选)
+```
+OPENAI_API_KEY=sk-xxx
+```
 
-- ✅ 基础运行时 / Policy / 工具示例
-- 🔄 多视角记忆（设计中）
-- 🧩 可插拔策略生态
-- 🌐 FastAPI / WebSocket 参考层
+然后运行：
 
-完整详见 文档站 “设计文档 / 白皮书” 与 “API 参考” 章节。
-
-## 许可
-
-Apache 2.0 (见 LICENSE)。
-
-## 贡献
-
-欢迎 Issue / PR。详见 `CONTRIBUTING.md`。
+```bash
+python examples/hello_graph.py
+```
 
 ---
-© 2025 Weaver Project
 
-## 4. 与现有工作的比较 (Comparison with Existing Work)
+## 🧠 核心抽象
 
-Weaver与LangChain等通用工具链是**正交互补**的。LangChain提供了强大的“能力积木”（如模型接口、工具定义），而Weaver则专注于提供一个全新的“应用哲学和架构”：**一个用于构建和托管“调解式”协作AI的、有状态的后端框架。** 它为强大的Agent提供了一个能发挥其最高智慧——促进人类协作——的舞台。
+| 抽象 | 作用 | 现状 | 未来方向 |
+| ---- | ---- | ---- | -------- |
+| Policy | 生成系统提示（角色 + 原则） | `MediationPolicy` | 策略生态 / 动态权重 |
+| WeaverRuntime | 统一入口：准备上下文 -> 执行图 -> 记忆回写 | 已实现 | 插件化 Pipeline Hook |
+| MemoryCoordinator | 聚合 / 提供历史消息 | 简单 in-memory | 多层视角 + 隐私过滤 |
+| WeaverGraph | LangGraph 上的对话执行 (ReAct Loop) | 基础节点 | 可视化 UI / 节点市场 |
+| Tools | 行为能力（私聊 / 公共广播） | 两个示例 | 权限隔离 / 策略绑定 |
 
-## 5. 路线图与未来展望 (Roadmap & Future Work)
+---
 
-Weaver的旅程将是不断探索“AI如何更好地促进人类协作”的过程。我们的路线图包括：
+## 🧪 测试
 
-1.  **原型验证 (v0.1-v0.3)**: 实现核心的“调解式”引导机制。
-2.  **框架开源 (v0.4-v0.7)**: 发布一个包含核心API和完整文档的健壮SDK。
-3.  **生态深化 (v1.0+)**: 建立一个`Policy`库，分享不同场景下的“调解策略”，并与学术界合作，深入研究计算调解学(Computational Mediation)的理论与实践。
+项目自带基础单测：
 
-我们相信，AI的终极价值不在于替代人类，而在于放大人类自身的智慧与善意。Weaver，正是朝着这个方向迈出的一小步。
+```bash
+pytest -q
+```
+
+重点示例：
+* `tests/runtime/test_policy.py` 验证系统提示格式
+* `tests/core/test_graph.py` 使用 Fake LLM 检验 graph 行为
+* `tests/building_blocks/test_tools.py` 工具回显逻辑
+
+---
+
+## �️ 路线图（摘录）
+
+短期 (0.x)：
+* 多视角记忆：私域 / 公域 / 主题投影
+* Policy 插件注册与复合
+* FastAPI / WebSocket 参考服务
+
+中期 (1.x)：
+* 调解模式模板库（团队冲突 / 预算规划 / 决策协同）
+* 记忆裁剪与语义压缩
+* 评估指标（介入节奏、情绪缓冲、共识质量）
+
+长期：
+* 计算调解（Computational Mediation）研究接口
+* 策略学习与自适应微调
+
+完整背景、理念及设计：参见 `docs/whitepaper_v1.md` 与 `docs/design/whitepaper_v1.md`。
+
+---
+
+## 🤝 贡献指南
+
+1. Fork & 创建分支：`feat/xxx` / `fix/yyy`
+2. 确保本地 `pytest` 全绿，必要时补充测试
+3. 遵循代码风格：
+   ```bash
+   ruff check . && ruff format .
+   ```
+4. 提交 PR 时描述动机 + 变更影响
+
+欢迎提交：
+* 新策略 (Policy)
+* 新工具 (Tool) 示例
+* 记忆过滤 / 压缩算法实验
+
+---
+
+## 📄 许可
+
+Apache 2.0，详见 `LICENSE`。
+
+---
+
+## 💬 FAQ（简要）
+
+**Q: 这是 LangChain 的替代吗？** 不是。Weaver 聚焦“社会协作结构”，与 LangChain / LangGraph 协同工作。
+
+**Q: 支持多模型吗？** 运行时只依赖抽象消息接口，可注入任意兼容 LLM（含 Fake for test）。
+
+**Q: 生产可用吗？** 当前为早期实验 (0.0.x)。接口可能变动，请关注 Roadmap。
+
+---
+
+© 2025 Weaver Project. Amplifying human collaborative intelligence.

@@ -2,16 +2,25 @@ name: CI
 
 on:
   push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
 
 jobs:
-  setup-python:
+  build-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -19,11 +28,21 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+
       - name: Install dependencies
-        run: pip install -e .[dev]
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
       - name: Lint (ruff)
         run: ruff check .
+
       - name: Format check (black)
         run: black --check .
+
       - name: Run tests
         run: pytest -q
+
+      - name: Coverage placeholder
+        if: always()
+        run: echo "Add coverage + codecov upload in future"
