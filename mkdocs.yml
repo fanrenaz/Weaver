@@ -1,0 +1,54 @@
+site_name: Weaver AI
+site_description: 一个用于构建协作式AI的原生框架
+repo_url: https://github.com/fanrenaz/Weaver
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            docstring_style: google
+            merge_init_into_package: true
+  - gen-files:
+      scripts:
+        - scripts/gen_nav.py
+  - literate-nav
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.instant
+    - navigation.expand
+    - content.code.copy
+    - search.highlight
+    - search.share
+nav:
+  - 首页: index.md
+  - 安装: installation.md
+  - 快速入门: getting_started.md
+  - 核心概念:
+      - Space & Runtime: concepts/space.md
+      - Policy: concepts/policy.md
+      - 多视角记忆: concepts/memory.md
+  - 设计文档:
+      - 白皮书: design/whitepaper_v1.md
+  - 旧版本归档:
+    - 白皮书(v1原稿): legacy/whitepaper_v1.md
+  - API 参考:
+    - Runtime: reference/runtime.md
+    - Graph: reference/graph.md
+    - Tools: reference/tools.md
+    - Models: reference/models.md
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - codehilite
+  - footnotes
+  - tables
+  - attr_list
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/fanrenaz/Weaver

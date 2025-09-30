@@ -19,4 +19,9 @@ dev = [
     "ruff",
     "black",
     "ipykernel", # for Jupyter notebooks
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
 ]

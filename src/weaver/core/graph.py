@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from langchain_openai import ChatOpenAI
 from langchain_core.language_models.fake import FakeListLLM
@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 # Load environment variables from a local .env file if present (Phase 2.2+ runtime convenience)
 load_dotenv()
 from weaver.building_blocks.tools import TOOLS
+from weaver.exceptions import ConfigurationError, ToolExecutionError
 
 logger = logging.getLogger(__name__)
 
@@ -39,32 +40,30 @@ DEFAULT_SYSTEM_PROMPT = (
 class WeaverGraph:
     """Builds and compiles the LangGraph state machine for the agent."""
 
-    def __init__(self, system_prompt: str | None = None) -> None:
-        # LLM configured from environment for portability.
-        llm_model = os.getenv("WEAVER_MODEL", "gpt-5-mini")
-        api_key = os.getenv("OPENAI_API_KEY")  # rely on user environment
-        # Support both variable names: OPENAI_API_BASE (preferred) and legacy OPENAI_BASE_URL
-        api_base = os.getenv("OPENAI_API_BASE") or os.getenv("OPENAI_BASE_URL")
-
-        if api_key:
-            try:
-                extra_kwargs: Dict[str, Any] = {}
-                if api_base:
-                    # ChatOpenAI accepts openai_api_base in recent langchain_openai versions
-                    extra_kwargs["openai_api_base"] = api_base
-                extra_kwargs["api_key"] = api_key
-                llm = ChatOpenAI(model=llm_model, **extra_kwargs)
-            except Exception as e:  # pragma: no cover
+    def __init__(self, system_prompt: str | None = None, llm: Optional[Any] = None) -> None:
+        # Allow injection (for tests) else configure from environment.
+        if llm is None:
+            llm_model = os.getenv("WEAVER_MODEL", "gpt-5-mini")
+            api_key = os.getenv("OPENAI_API_KEY")  # rely on user environment
+            api_base = os.getenv("OPENAI_API_BASE") or os.getenv("OPENAI_BASE_URL")
+            if api_key:
+                try:
+                    extra_kwargs: Dict[str, Any] = {}
+                    if api_base:
+                        extra_kwargs["openai_api_base"] = api_base
+                    extra_kwargs["api_key"] = api_key
+                    llm = ChatOpenAI(model=llm_model, **extra_kwargs)
+                except Exception as e:  # pragma: no cover
+                    logger.warning(
+                        "Failed to initialize ChatOpenAI (%s); falling back to FakeListLLM", e
+                    )
+                    llm = self._build_fallback_llm()
+            else:
                 logger.warning(
-                    "Failed to initialize ChatOpenAI (%s); falling back to FakeListLLM", e
+                    "OPENAI_API_KEY absent; using FakeListLLM fallback (set in .env or env vars to enable real LLM)."
                 )
                 llm = self._build_fallback_llm()
-        else:
-            logger.warning(
-                "OPENAI_API_KEY absent; using FakeListLLM fallback (set in .env or env vars to enable real LLM)."
-            )
-            llm = self._build_fallback_llm()
-        self._llm = llm
+        self._llm = llm  # type: ignore[assignment]
         self._system_prompt = system_prompt or DEFAULT_SYSTEM_PROMPT
         self.app = self._build_graph()
 
@@ -75,9 +74,15 @@ class WeaverGraph:
         Returns a partial state update containing either a planned tool call(s)
         or None signaling the loop should end.
         """
-        bound_llm = self._llm.bind_tools(TOOLS)
-        messages = [SystemMessage(content=self._system_prompt)] + state.get("input", [])
-        response = bound_llm.invoke(messages)
+        try:
+            bound_llm = self._llm.bind_tools(TOOLS)
+            messages = [SystemMessage(content=self._system_prompt)] + state.get("input", [])
+            response = bound_llm.invoke(messages)
+        except ConfigurationError:
+            raise
+        except Exception as e:  # pragma: no cover - defensive
+            logger.exception("LLM/tool invocation error")
+            raise ToolExecutionError(str(e)) from e
         if not isinstance(response, AIMessage):
             logger.warning("Agent response not AIMessage: %s", type(response))
             tool_calls = None
@@ -92,7 +97,7 @@ class WeaverGraph:
     def _build_graph(self):
         workflow = StateGraph(SpaceState)
         workflow.add_node("agent", self._agent_node)
-        tool_node = ToolNode(TOOLS)
+        tool_node = ToolNode(TOOLS, messages_key="input")
         workflow.add_node("tools", tool_node)
 
         workflow.set_entry_point("agent")

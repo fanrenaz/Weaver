@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @tool
-def reply_privately(recipient: str, content: str) -> str:
+def reply_privately(recipient: str, content: str) -> str:  # type: ignore[misc]
     """Send a confidential private reply to a single recipient.
 
     Parameters:
@@ -29,7 +29,7 @@ def reply_privately(recipient: str, content: str) -> str:
 
 
 @tool
-def post_to_shared(content: str) -> str:
+def post_to_shared(content: str) -> str:  # type: ignore[misc]
     """Post a message to the shared group-visible conversation space.
 
     Parameters:
