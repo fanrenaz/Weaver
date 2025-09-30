@@ -34,21 +34,38 @@
 - [ ] **运行 "Hello, Graph!"**:
     - [ ] 在 `examples/` 目录下创建一个简单的LangGraph示例（可从官方文档复制），确保整个环境和依赖能正常工作。
 
-### 1.2 核心模型与逻辑实现 (Core Model & Logic)
+### **Phase 1.2 (重制版): 核心原型切片实现 (Core Prototype Slice)**
 
-- [ ] **定义核心数据模型 (`models.py`)**:
-    - [ ] 使用 `Pydantic` 定义 `SpaceState` (包含参与者、记忆等)。
-    - [ ] 定义 `UserMessageEvent` (输入事件)。
-    - [ ] 定义 `ReplyPrivateAction`, `PostToSharedAction` 等 `Action` 模型 (输出决策)。
-- [ ] **构建核心Graph (`core.py`)**:
-    - [ ] 实现 `SpaceState` 的加载和更新逻辑。
-    - [ ] 创建 **Agent决策节点**: 接收 `SpaceState`，调用LLM，输出一个 `Action`。
-        - *提示：此处的Prompt可以先硬编码，以复现白皮书中的场景为首要目标。*
-    - [ ] 创建 **工具执行节点**: 接收 `Action` 并执行（初期可以只是 `print` 对应信息）。
-    - [ ] 创建 **条件路由边**: 根据 `Action` 的类型，决定下一个节点。
-    - [ ] 将以上节点和边编译成一个可执行的 `graph` 对象。
-- [ ] **实现内存管理**:
-    - [ ] 创建一个简单的、基于内存字典的 `MemoryManager`，用于存储和检索私密/共享对话历史。
+*目标：遵循新架构，自下而上地实现第一个完整的、驱动“杀手级Demo”的垂直功能切片。*
+
+- [ ] **1. L1 & Models: 定义基础构建块和数据结构**
+    - [ ] **`src/weaver/models/`**:
+        - [ ] 在 `actions.py` 中定义 `ReplyPrivateAction`, `PostToSharedAction` 等Pydantic模型。
+        - [ ] 在 `events.py` 中定义 `UserMessageEvent` Pydantic模型。
+        - [ ] 在 `state.py` 中定义 `SpaceState` TypedDict（包含`input`, `action_to_execute`等）。
+    - [ ] **`src/weaver/building_blocks/tools.py`**:
+        - [ ] 使用 `@tool` 装饰器定义 `reply_privately` 和 `post_to_shared` 两个工具函数（实现暂时只需`print`）。
+    - [ ] 提交 L1 和模型层: `git commit -m "Feat(L1,Models): Define data models and tool building blocks"`
+
+- [ ] **2. L2: 实现核心Agent图**
+    - [ ] **`src/weaver/core/graph.py`**:
+        - [ ] 创建 `WeaverGraph` 类。
+        - [ ] 在类中，导入`tools.py`中定义的工具。
+        - [ ] 实现 `_agent_node`，它将使用绑定了这些工具的LLM进行决策。
+        - [ ] 在 `_build_graph` 方法中，使用`ToolNode`和条件路由，构建标准的ReAct循环图。
+        - [ ] 编译图并将其作为类的公共属性（如 `self.app`）。
+    - [ ] 提交 L2 核心图: `git commit -m "Feat(L2): Implement core agent graph with ReAct loop"`
+
+- [ ] **3. L4 & L3 (临时实现): 编写并运行Demo脚本**
+    - [ ] **`examples/cli_demo/financial_counseling.py`**:
+        - [ ] **作为临时的 L3 (Runtime)**: 在这个脚本的顶部，临时实现 `get_session_history` 逻辑和 `session_store` 字典。
+        - [ ] **作为 L4 (Application)**: 编写主函数，负责：
+            1.  实例化 `WeaverGraph`。
+            2.  使用 `RunnableWithMessageHistory` 包装核心图 `app`。
+            3.  按顺序模拟 “夫妻财务咨询” 的多回合对话。
+            4.  在每次调用时，构造 `UserMessageEvent`，并传入正确的 `session_id` 到 `config` 中。
+            5.  打印每次调用的结果，并验证其是否符合白皮书中的预期。
+    - [ ] 提交 L4/L3 Demo实现: `git commit -m "Feat(L3,L4): Implement and run financial counseling demo script"`
 
 ### 1.3 “杀手级Demo”脚本 (The Killer Demo)
 

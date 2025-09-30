@@ -1,0 +1,22 @@
+[project]
+name = "weaver-ai"
+version = "0.0.1"
+description = "A native framework for building collaborative AI."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain",
+    "langgraph",
+    "langchain-openai",
+    "pydantic",
+    "python-dotenv",
+    "langchain-community"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "ipykernel", # for Jupyter notebooks
+]
