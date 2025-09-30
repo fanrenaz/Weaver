@@ -153,3 +153,13 @@ Weaver的旅程将是不断探索“AI如何更好地促进人类协作”的过
 3.  **生态深化 (v1.0+)**: 建立一个`Policy`库，分享不同场景下的“调解策略”，并与学术界合作，深入研究计算调解学(Computational Mediation)的理论与实践。
 
 我们相信，AI的终极价值不在于替代人类，而在于放大人类自身的智慧与善意。Weaver，正是朝着这个方向迈出的一小步。
+
+## 附录：Phase 1.3 进展摘要
+
+在 Phase 1.3 中，我们引入了一个适配器链：
+
+```
+create_state_adapter_runnable() -> WeaverGraph().app -> output normalizer
+```
+
+它允许使用标准 `RunnableWithMessageHistory` 进行会话记忆管理，无需让外部调用者了解内部 `SpaceState` 结构。示例脚本 `examples/cli_demo/financial_counseling.py` 展示了多会话隔离与“上帝视角”会话的上下文累积。

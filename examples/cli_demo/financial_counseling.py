@@ -1,33 +1,31 @@
-"""Financial counseling multi-turn demo (Phase 1.2).
+"""Financial counseling multi-turn demo (Phase 1.3).
 
-This script temporarily implements L3 (runtime/session history) + L4 (app flow).
+Demonstrates integration with RunnableWithMessageHistory via adapter chain.
 """
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict
 from langchain_core.messages import BaseMessage, HumanMessage
-
-from weaver.core.graph import WeaverGraph
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from weaver.core.chains import create_weaver_chain
 
 # ------------------ L3 Temporary Session Store ------------------
-# In future phases this will move into a persistence layer under runtime/.
-session_store: Dict[str, List[BaseMessage]] = {}
+session_store: Dict[str, InMemoryChatMessageHistory] = {}
 
 
-def get_session_history(session_id: str) -> List[BaseMessage]:
-    return session_store.setdefault(session_id, [])
+def get_session_history(session_id: str) -> InMemoryChatMessageHistory:
+    return session_store.setdefault(session_id, InMemoryChatMessageHistory())
 
 
 # ------------------ Helper Function ------------------
 
-def run_turn(app, session_id: str, content: str):
+def run_turn(app_with_history, session_id: str, content: str):
     user_msg = HumanMessage(content=content)
-    history = get_session_history(session_id)
-    # Build state and invoke graph directly
-    state = {"input": history + [user_msg]}
-    result_state = app.invoke(state)
-    # Update stored history
-    history.extend(result_state.get("input", []))
+    result_state = app_with_history.invoke(
+        {"input": [user_msg]},
+        config={"configurable": {"session_id": session_id}},
+    )
     print("--- USER:", content)
     tool_out = result_state.get("tool_output")
     if tool_out:
@@ -43,7 +41,13 @@ def run_turn(app, session_id: str, content: str):
 # ------------------ Main Demo ------------------
 
 def main():
-    graph = WeaverGraph()
+    chain = create_weaver_chain()
+    app_with_history = RunnableWithMessageHistory(
+        chain,
+        lambda session_id: get_session_history(session_id),
+        input_messages_key="input",
+        history_messages_key="input",
+    )
 
     session_id = "couple_finance_demo"
 
@@ -55,9 +59,16 @@ def main():
     ]
 
     for turn in conversation:
-        run_turn(graph.app, session_id, turn)
+        run_turn(app_with_history, session_id, turn)
 
-    print("Session history length:", len(get_session_history(session_id)))
+    # Validate isolation with different session ids
+    run_turn(app_with_history, "jane_session", "我担心我们的储蓄速度不够。")
+    run_turn(app_with_history, "john_session", "我觉得我们可以稍微多花一点在体验上。")
+
+    print("Jane history size:", len(get_session_history("jane_session").messages))
+    print("John history size:", len(get_session_history("john_session").messages))
+
+    print("Shared session (god view) history length:", len(get_session_history(session_id).messages))
 
 
 if __name__ == "__main__":

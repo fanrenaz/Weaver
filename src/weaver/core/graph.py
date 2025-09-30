@@ -37,7 +37,7 @@ class WeaverGraph:
 
     def __init__(self) -> None:
         # LLM configured from environment for portability.
-        llm_model = os.getenv("WEAVER_MODEL", "gpt-4o-mini")
+        llm_model = os.getenv("WEAVER_MODEL", "gpt-5-mini")
         api_key = os.getenv("OPENAI_API_KEY")  # rely on user environment
         api_base = os.getenv("OPENAI_BASE_URL")
 
